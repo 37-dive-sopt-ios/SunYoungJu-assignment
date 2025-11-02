@@ -1,5 +1,5 @@
 //
-//  ToastView.swift
+//  ToastMessage.swift
 //  Baemin
 //
 //  Created by sun on 10/31/25.
@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class ToastView: UIView {
+final class ToastMessage: UIView {
 
     // MARK: - UI Components
     
@@ -50,7 +50,7 @@ final class ToastView: UIView {
     // MARK: - Presentation
     
     static func show(in parentView: UIView, message: String) {
-        let toastView = ToastView(message: message)
+        let toastView = ToastMessage(message: message)
         parentView.addSubview(toastView)
 
         toastView.alpha = 0
