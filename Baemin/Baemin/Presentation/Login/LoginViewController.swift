@@ -107,9 +107,8 @@ final class LoginViewController: BaseViewController {
             self.loginButton.setActive(isEnabled)
         }
         
-        emailField.onTextChanged = { _ in refreshLoginButtonEnabled() }
-        passwordField.onTextChanged = { _ in refreshLoginButtonEnabled() }
-        refreshLoginButtonEnabled()
+        emailField.onTextChanged = { (_: String) in refreshLoginButtonEnabled() }
+        passwordField.onTextChanged = { (_: String) in refreshLoginButtonEnabled() }
         
         emailField.onReturn = { [weak self] in self?.passwordField.focus() }
         passwordField.onReturn = { [weak self] in
@@ -132,7 +131,7 @@ final class LoginViewController: BaseViewController {
         guard !email.isEmpty, !password.isEmpty else { return }
         
         if let invalid = validateSubmission(email: email, password: password) {
-            ToastView.show(in: view, message: invalid.message)
+            ToastMessage.show(in: view, message: invalid.message)
             focus(for: invalid.field)
             return
         }
@@ -176,6 +175,7 @@ final class LoginViewController: BaseViewController {
 }
 
 // MARK: - Validation
+
 extension LoginViewController {
 
     private enum InvalidField { case email, password }
