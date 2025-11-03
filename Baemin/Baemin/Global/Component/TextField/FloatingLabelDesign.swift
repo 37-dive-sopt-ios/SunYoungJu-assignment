@@ -5,13 +5,6 @@
 //  Created by sun on 11/1/25.
 //
 
-//
-//  FloatingLabelDesign.swift
-//  Baemin
-//
-//  Created by sun on 11/1/25.
-//
-
 import UIKit
 
 struct FloatingLabelDesign {
