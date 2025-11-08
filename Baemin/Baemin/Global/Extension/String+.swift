@@ -7,15 +7,24 @@
 
 import Foundation
 
-extension String {
+enum Validator {
 
-    var isValidEmail: Bool {
-        let pattern = #"^[A-Z0-9a-z._%+-]+@([A-Za-z0-9-]+\.)+[A-Za-z]{2,}$"#
-        return self.range(of: pattern, options: .regularExpression) != nil
+    private static let emailRegex = try! NSRegularExpression(
+        pattern: #"^[A-Z0-9a-z._%+-]+@([A-Za-z0-9-]+\.)+[A-Za-z]{2,}$"#
+    )
+
+    private static let passwordRegex = try! NSRegularExpression(
+        pattern: #"^(?=.*[!_@$%^&+=])[A-Za-z0-9!_@$%^&+=]{8,12}$"#
+    )
+
+    static func isValidEmail(_ email: String) -> Bool {
+        let range = NSRange(email.startIndex..., in: email)
+        return emailRegex.firstMatch(in: email, range: range) != nil
     }
 
-    var isValidPassword: Bool {
-        let pattern = #"^(?=.*[!_@$%^&+=])[A-Za-z0-9!_@$%^&+=]{8,12}$"#
-        return self.range(of: pattern, options: .regularExpression) != nil
+    static func isValidPassword(_ password: String) -> Bool {
+        let range = NSRange(password.startIndex..., in: password)
+        return passwordRegex.firstMatch(in: password, range: range) != nil
     }
 }
+

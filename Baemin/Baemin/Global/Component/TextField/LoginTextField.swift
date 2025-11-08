@@ -19,11 +19,7 @@ enum LoginFieldType {
     var needsEye: Bool { self == .password }
 }
 
-// MARK: - Component
-
 final class LoginTextField: UIView, UITextFieldDelegate {
-
-    // MARK: - Public
     
     var text: String { textField.text ?? "" }
     var onReturn: (() -> Void)?
@@ -87,21 +83,18 @@ final class LoginTextField: UIView, UITextFieldDelegate {
             $0.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(focusContainer)))
             $0.isUserInteractionEnabled = true
         }
-        container.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-            $0.height.greaterThanOrEqualTo(46)
-        }
+        container.snp.makeConstraints { $0.edges.equalToSuperview() }
 
         container.addSubviews(textField, accessory)
 
         textField.do {
             $0.backgroundColor = .clear
-            $0.font = UIFont.Pretendard.body_r_14.font
-            $0.textColor = .label
+            $0.font = .body_r_14
+            $0.textColor = .baeminBlack
             $0.isSecureTextEntry = fieldType.secureDefault
             $0.clearButtonMode = .never
             $0.delegate = self
-            $0.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
+            $0.addTarget(self, action: #selector(textDidChange), for: UIControl.Event.editingChanged)
             $0.addLeftPadding(16)
             $0.addRightPadding(8)
         }
@@ -109,6 +102,7 @@ final class LoginTextField: UIView, UITextFieldDelegate {
             $0.leading.equalToSuperview()
             $0.trailing.equalTo(accessory.snp.leading).offset(-8)
             $0.top.bottom.equalToSuperview()
+            $0.height.equalTo(46)
         }
 
         accessory.do {
@@ -193,7 +187,6 @@ final class LoginTextField: UIView, UITextFieldDelegate {
     }
 
     // MARK: - Helpers
-    
     private func setAccessory(visible: Bool) {
         UIView.animate(withDuration: 0.15) {
             self.clearBtn?.alpha = visible ? 1 : 0
@@ -206,7 +199,7 @@ final class LoginTextField: UIView, UITextFieldDelegate {
     private func makeButton(image: String, action: Selector) -> UIButton {
         UIButton(type: .system).then {
             $0.setImage(UIImage(named: image), for: .normal)
-            $0.tintColor = UIColor(named: "baemin-gray-400") ?? .tertiaryLabel
+            $0.tintColor = .baeminGray300
             $0.alpha = 0
             $0.addTarget(self, action: action, for: .touchUpInside)
         }
@@ -229,3 +222,4 @@ final class LoginTextField: UIView, UITextFieldDelegate {
         return true
     }
 }
+

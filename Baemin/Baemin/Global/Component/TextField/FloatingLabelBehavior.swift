@@ -5,13 +5,6 @@
 //  Created by sun on 11/1/25.
 //
 
-//
-//  FloatingLabelBehavior.swift
-//  Baemin
-//
-//  Created by sun on 11/1/25.
-//
-
 import UIKit
 
 final class FloatingLabelBehavior {
@@ -101,3 +94,4 @@ final class FloatingLabelBehavior {
         container?.layer.borderColor = focused ? design.borderColorFocused : design.borderColorNormal
     }
 }
+

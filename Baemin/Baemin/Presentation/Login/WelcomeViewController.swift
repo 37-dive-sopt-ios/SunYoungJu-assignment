@@ -6,7 +6,6 @@
 //
 
 import UIKit
-
 import SnapKit
 import Then
 
@@ -19,8 +18,6 @@ protocol WelcomeViewControllerDelegate: AnyObject {
 // MARK: - WelcomeViewController
 
 final class WelcomeViewController: BaseViewController {
-
-    // MARK: - Public
     
     weak var delegate: WelcomeViewControllerDelegate?
     var email: String = ""
@@ -37,15 +34,15 @@ final class WelcomeViewController: BaseViewController {
 
     private let titleLabel = UILabel().then {
         $0.textAlignment = .center
-        $0.textColor = UIColor(named: "baemin-black") ?? .label
-        $0.font = UIFont.Pretendard.head_b_24.font
+        $0.textColor = .baeminBlack
+        $0.font = .pretendard(.bold, size: 24)
         $0.text = "환영합니다"
     }
 
     private let subtitleLabel = UILabel().then {
         $0.textAlignment = .center
-        $0.textColor = UIColor(named: "baemin-black") ?? .secondaryLabel
-        $0.font = UIFont.Pretendard.body_r_14.font
+        $0.textColor = .baeminBlack
+        $0.font = .pretendard(.regular, size: 14)
         $0.text = "반가워요!"
     }
 
@@ -58,10 +55,21 @@ final class WelcomeViewController: BaseViewController {
         $0.spacing = 16
     }
 
+    private let contentStack = UIStackView().then {
+        $0.axis = .vertical
+        $0.alignment = .fill
+        $0.distribution = .fill
+        $0.spacing = 24
+    }
+
     // MARK: - Lifecycle
     
     override func setUI() {
-        view.addSubviews(navigationBar, mainImageView, verticalStack, backButton)
+        view.addSubviews(
+            navigationBar,
+            mainImageView,
+            contentStack
+        )
 
         navigationBar.setTitle("대체 뼈짐 누가 시켰어??")
         navigationBar.onTapBack = { [weak self] in self?.notifyAndClose() }
@@ -71,32 +79,39 @@ final class WelcomeViewController: BaseViewController {
         verticalStack.addArrangedSubview(subtitleLabel)
         verticalStack.addArrangedSubview(UIView())
 
-        backButton.addTarget(self, action: #selector(didTapBackButtonAction), for: .touchUpInside)
+        contentStack.addArrangedSubviews(
+            verticalStack,
+            backButton
+        )
+
+        backButton.addTarget(
+            self,
+            action: #selector(didTapBackButtonAction),
+            for: .touchUpInside
+        )
     }
 
     override func setLayout() {
-        navigationBar.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.leading.trailing.equalTo(view)
-            make.height.equalTo(42)
+        navigationBar.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.trailing.equalTo(view)
+            $0.height.equalTo(42)
         }
 
-        mainImageView.snp.makeConstraints { make in
-            make.top.equalTo(navigationBar.snp.bottom)
-            make.leading.trailing.equalTo(view)
-            make.height.equalTo(211)
+        mainImageView.snp.makeConstraints {
+            $0.top.equalTo(navigationBar.snp.bottom)
+            $0.leading.trailing.equalTo(view)
+            $0.height.equalTo(211)
         }
 
-        verticalStack.snp.makeConstraints { make in
-            make.top.equalTo(mainImageView.snp.bottom).offset(24)
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(16)
+        contentStack.snp.makeConstraints {
+            $0.top.equalTo(mainImageView.snp.bottom).offset(24)
+            $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(16)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(24)
         }
 
-        backButton.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(16)
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(24)
-            make.height.equalTo(52)
-            make.top.greaterThanOrEqualTo(verticalStack.snp.bottom).offset(24)
+        backButton.snp.makeConstraints {
+            $0.height.equalTo(52)
         }
     }
 
@@ -115,14 +130,16 @@ final class WelcomeViewController: BaseViewController {
     private func notifyAndClose() {
         delegate?.didTapBackButton(email: email)
 
-        if let navigation = navigationController {
-            if navigation.viewControllers.first == self {
-                navigation.dismiss(animated: true)
+        if let nav = navigationController {
+            if nav.viewControllers.first == self {
+                nav.dismiss(animated: true)
             } else {
-                navigation.popViewController(animated: true)
+                nav.popViewController(animated: true)
             }
         } else {
             dismiss(animated: true)
         }
     }
 }
+
+

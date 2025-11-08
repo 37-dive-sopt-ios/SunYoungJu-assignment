@@ -25,14 +25,15 @@ struct FloatingLabelDesign {
         .init(
             yOffset: 6,
             duration: 0.18,
-            borderColorNormal: (UIColor(named: "baemin-gray-200") ?? .systemGray4).cgColor,
-            borderColorFocused: (UIColor(named: "baemin-black") ?? .label).cgColor,
-            labelTextColor: UIColor(named: "baemin-gray-500") ?? .lightGray,
-            labelFont: UIFont.Pretendard.body_r_14.font,
-            labelRaisedFont: UIFont.Pretendard.caption_r_10.font,
-            labelBackgroundColor: UIColor(named: "baemin-white") ?? .white,
-            placeholderColor: UIColor(named: "baemin-gray-700") ?? .gray,
-            placeholderFont: UIFont.Pretendard.body_r_14.font
+            borderColorNormal: UIColor.baeminGray200.cgColor,
+            borderColorFocused: UIColor.baeminBlack.cgColor,
+            labelTextColor: .baeminGray300,
+            labelFont: .body_r_14,
+            labelRaisedFont: .caption_r_10,
+            labelBackgroundColor: .baeminWhite,
+            placeholderColor: .baeminGray700,
+            placeholderFont: .body_r_14
         )
     }
 }
+

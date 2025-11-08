@@ -31,12 +31,12 @@ final class LoginViewController: BaseViewController {
     private let loginButton = CTAButton(title: "로그인", isActive: false, size: .large)
     
     private let findAccountButton = UIButton(type: .system).then {
-        var configuration = UIButton.Configuration.plain()
-        configuration.image = UIImage(named: "chevron-right")
-        configuration.imagePlacement = .trailing
-        configuration.imagePadding = 4
-        configuration.baseForegroundColor = UIColor(named: "baemin-black") ?? .label
-        configuration.attributedTitle = AttributedString(
+        var config = UIButton.Configuration.plain()
+        config.image = UIImage(named: "chevron-right")
+        config.imagePlacement = .trailing
+        config.imagePadding = 4
+        config.baseForegroundColor = .baeminBlack
+        config.attributedTitle = AttributedString(
             NSAttributedString.pretendardString(
                 "계정 찾기",
                 style: .body_r_14,
@@ -44,12 +44,13 @@ final class LoginViewController: BaseViewController {
                 isSingleLine: true
             )
         )
-        $0.configuration = configuration
+        $0.configuration = config
     }
     
     private let receivedLabel = UILabel().then {
-        let color = (UIColor(named: "baemin-black") ?? .label).withAlphaComponent(0.85)
+        let color = UIColor.baeminBlack.withAlphaComponent(0.85)
         $0.setText(" ", style: .body_r_14, color: color, isSingleLine: true, alignment: .center)
+        $0.isHidden = true
     }
     
     private let verticalStack = UIStackView().then {
@@ -57,7 +58,6 @@ final class LoginViewController: BaseViewController {
         $0.alignment = .fill
         $0.distribution = .fill
         $0.spacing = 12
-        $0.isLayoutMarginsRelativeArrangement = false
     }
     
     // MARK: - Lifecycle
@@ -71,44 +71,48 @@ final class LoginViewController: BaseViewController {
         verticalStack.addArrangedSubview(passwordField)
         verticalStack.setCustomSpacing(24, after: passwordField)
         verticalStack.addArrangedSubview(loginButton)
-        loginButton.snp.makeConstraints { $0.height.equalTo(52) }
-        
-        receivedLabel.isHidden = true
     }
     
     override func setLayout() {
-        navigationBar.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.leading.trailing.equalTo(view)
-            make.height.equalTo(42)
+        navigationBar.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.trailing.equalTo(view)
+            $0.height.equalTo(42)
         }
         
-        verticalStack.snp.makeConstraints { make in
-            make.top.equalTo(navigationBar.snp.bottom).offset(24)
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(16)
+        verticalStack.snp.makeConstraints {
+            $0.top.equalTo(navigationBar.snp.bottom).offset(24)
+            $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
         
-        findAccountButton.snp.makeConstraints { make in
-            make.top.equalTo(verticalStack.snp.bottom).offset(32)
-            make.centerX.equalToSuperview()
+        loginButton.snp.makeConstraints {
+            $0.height.equalTo(52)
         }
         
-        receivedLabel.snp.makeConstraints { make in
-            make.top.equalTo(findAccountButton.snp.bottom).offset(8)
-            make.centerX.equalTo(findAccountButton)
-            make.bottom.lessThanOrEqualTo(view.safeAreaLayoutGuide).inset(24)
+        findAccountButton.snp.makeConstraints {
+            $0.top.equalTo(verticalStack.snp.bottom).offset(32)
+            $0.centerX.equalToSuperview()
+        }
+        
+        receivedLabel.snp.makeConstraints {
+            $0.top.equalTo(findAccountButton.snp.bottom).offset(8)
+            $0.centerX.equalTo(findAccountButton)
+            $0.bottom.lessThanOrEqualTo(view.safeAreaLayoutGuide).inset(24)
         }
     }
     
     override func setAction() {
-        let refreshLoginButtonEnabled: () -> Void = { [weak self] in
+        let refresh = { [weak self] in
             guard let self else { return }
-            let isEnabled = !self.emailField.text.isEmpty && !self.passwordField.text.isEmpty
-            self.loginButton.setActive(isEnabled)
+            self.loginButton.setActive(
+                !self.emailField.text.isEmpty &&
+                !self.passwordField.text.isEmpty
+            )
         }
         
-        emailField.onTextChanged = { (_: String) in refreshLoginButtonEnabled() }
-        passwordField.onTextChanged = { (_: String) in refreshLoginButtonEnabled() }
+        emailField.onTextChanged = { _ in refresh() }
+        passwordField.onTextChanged = { _ in refresh() }
+        refresh()
         
         emailField.onReturn = { [weak self] in self?.passwordField.focus() }
         passwordField.onReturn = { [weak self] in
@@ -123,11 +127,14 @@ final class LoginViewController: BaseViewController {
     
     // MARK: - Actions
     
-    @objc private func loginButtonTapped() { performLogin() }
+    @objc private func loginButtonTapped() {
+        performLogin()
+    }
     
     private func performLogin() {
         let email = emailField.text
         let password = passwordField.text
+        
         guard !email.isEmpty, !password.isEmpty else { return }
         
         if let invalid = validateSubmission(email: email, password: password) {
@@ -136,21 +143,23 @@ final class LoginViewController: BaseViewController {
             return
         }
         
-        let welcomeViewController = WelcomeViewController()
-        welcomeViewController.email = email
-        welcomeViewController.delegate = self
-        if let navigation = navigationController {
-            navigation.pushViewController(welcomeViewController, animated: true)
+        let vc = WelcomeViewController()
+        vc.email = email
+        vc.delegate = self
+        
+        if let nav = navigationController {
+            nav.pushViewController(vc, animated: true)
         } else {
-            let navigation = UINavigationController(rootViewController: welcomeViewController)
-            navigation.modalPresentationStyle = .fullScreen
-            present(navigation, animated: true)
+            let nav = UINavigationController(rootViewController: vc)
+            nav.modalPresentationStyle = .fullScreen
+            present(nav, animated: true)
         }
     }
     
     @objc private func findAccountTapped() {
-        let bottomSheetVC = LoginBottomSheetViewController()
-        bottomSheetVC.onConfirm = { [weak self] text in
+        let sheet = LoginBottomSheetViewController()
+        
+        sheet.onConfirm = { [weak self] text in
             guard let self else { return }
             self.receivedLabel.setText(
                 text,
@@ -161,41 +170,41 @@ final class LoginViewController: BaseViewController {
             )
             self.receivedLabel.isHidden = false
         }
-
-        bottomSheetVC.modalPresentationStyle = .pageSheet
-
-        if let sheet = bottomSheetVC.sheetPresentationController {
-            sheet.detents = [.medium()]
-            sheet.prefersGrabberVisible = true
-            sheet.preferredCornerRadius = 20
+        
+        sheet.modalPresentationStyle = .pageSheet
+        
+        if let controller = sheet.sheetPresentationController {
+            controller.detents = [.medium()]
+            controller.prefersGrabberVisible = true
+            controller.preferredCornerRadius = 20
         }
-
-        present(bottomSheetVC, animated: true)
+        
+        present(sheet, animated: true)
     }
 }
 
 // MARK: - Validation
 
 extension LoginViewController {
-
+    
     private enum InvalidField { case email, password }
-
-    private func validateSubmission(email: String, password: String) -> (message: String, field: InvalidField)? {
-        if !email.isValidEmail {
+    
+    private func validateSubmission(email: String, password: String)
+        -> (message: String, field: InvalidField)?
+    {
+        if !Validator.isValidEmail(email) {
             return ("이메일 형식이 달라요", .email)
         }
-        if !password.isValidPassword {
+        if !Validator.isValidPassword(password) {
             return ("비밀번호 형식이 달라요", .password)
         }
         return nil
     }
-
+    
     private func focus(for field: InvalidField) {
         switch field {
-        case .email:
-            emailField.focus()
-        case .password:
-            passwordField.focus()
+        case .email: emailField.focus()
+        case .password: passwordField.focus()
         }
     }
 }
@@ -207,3 +216,4 @@ extension LoginViewController: WelcomeViewControllerDelegate {
         emailField.setText(email)
     }
 }
+

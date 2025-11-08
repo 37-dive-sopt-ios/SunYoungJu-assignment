@@ -9,12 +9,10 @@
 /* Begin PBXBuildFile section */
 		A424C26C2EAE8F68006E0F1E /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = A424C26B2EAE8F68006E0F1E /* SnapKit */; };
 		A424C26F2EAE8F72006E0F1E /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = A424C26E2EAE8F72006E0F1E /* Then */; };
-		A4A6413B2EAB610600077FCA /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = A4A6413A2EAB610600077FCA /* .swiftlint.yml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A4A640F52EAB492200077FCA /* Baemin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Baemin.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A4A6413A2EAB610600077FCA /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -54,7 +52,6 @@
 		A4A640EC2EAB492200077FCA = {
 			isa = PBXGroup;
 			children = (
-				A4A6413A2EAB610600077FCA /* .swiftlint.yml */,
 				A4A640F72EAB492200077FCA /* Baemin */,
 				A4A640F62EAB492200077FCA /* Products */,
 			);
@@ -75,7 +72,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A4A641082EAB492300077FCA /* Build configuration list for PBXNativeTarget "Baemin" */;
 			buildPhases = (
-				A4A641392EAB60C100077FCA /* SwiftLint Script */,
 				A4A640F12EAB492200077FCA /* Sources */,
 				A4A640F22EAB492200077FCA /* Frameworks */,
 				A4A640F32EAB492200077FCA /* Resources */,
@@ -139,33 +135,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4A6413B2EAB610600077FCA /* .swiftlint.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		A4A641392EAB60C100077FCA /* SwiftLint Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "SwiftLint Script";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export PATH=\"/opt/homebrew/bin:$PATH\"\n\nif which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed. Try 'brew install swiftlint'\"\nfi\n\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A4A640F12EAB492200077FCA /* Sources */ = {
