@@ -46,7 +46,7 @@ final class WelcomeViewController: BaseViewController {
         $0.text = "반가워요!"
     }
 
-    private let backButton = CTAButton(title: "뒤로가기", isActive: true, size: .large)
+    private let backButton = CTAButton(title: "배민으로 가기", isActive: true, size: .large)
 
     private let verticalStack = UIStackView().then {
         $0.axis = .vertical
@@ -121,10 +121,25 @@ final class WelcomeViewController: BaseViewController {
         }
     }
 
+    // MARK: - Navigation
+
+    private func goToBaeminTabBar() {
+        let tabBarController = BaeminTabBarController()
+
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            window.rootViewController = tabBarController
+            window.makeKeyAndVisible()
+        } else {
+            present(tabBarController, animated: true)
+        }
+    }
+
     // MARK: - Actions
     
     @objc private func didTapBackButtonAction() {
-        notifyAndClose()
+        delegate?.didTapBackButton(email: email)
+        goToBaeminTabBar()
     }
 
     private func notifyAndClose() {
@@ -141,5 +156,3 @@ final class WelcomeViewController: BaseViewController {
         }
     }
 }
-
-
