@@ -29,7 +29,7 @@ struct FloatingLabelDesign {
             borderColorFocused: UIColor.baeminBlack.cgColor,
             labelTextColor: .baeminGray300,
             labelFont: .body_r_14,
-            labelRaisedFont: .caption_r_10,
+            labelRaisedFont: .body_r_10,
             labelBackgroundColor: .baeminWhite,
             placeholderColor: .baeminGray700,
             placeholderFont: .body_r_14
