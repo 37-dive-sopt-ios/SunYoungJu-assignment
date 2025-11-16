@@ -14,9 +14,7 @@ final class ListView: UIView {
     // MARK: - UI
     
     let collectionView: UICollectionView
-    let searchBar = BaeminSearchBar()
 
-    private let searchBarBackgroundView = UIView()
     private let gradientBackgroundView = UIView()
     private let gradientLayer = CAGradientLayer()
 
@@ -35,35 +33,20 @@ final class ListView: UIView {
     // MARK: - Setup
     
     private func setup() {
+        
+        backgroundColor = .baeminWhite
 
-        addSubview(searchBarBackgroundView)
-        addSubview(searchBar)
         addSubview(gradientBackgroundView)
         addSubview(collectionView)
 
-        searchBarBackgroundView.backgroundColor = UIColor.baeminBackgroundWhite
-
-        searchBarBackgroundView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(searchBar.snp.bottom).offset(12)
-        }
-
-        searchBar.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide).offset(2)
-            $0.leading.equalToSuperview().inset(16)
-            $0.trailing.equalToSuperview().inset(16)
-            $0.height.equalTo(40)
-        }
-
         gradientBackgroundView.snp.makeConstraints {
-            $0.top.equalTo(searchBar.snp.bottom).offset(12)
+            $0.top.equalToSuperview()
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(260)
         }
 
         collectionView.snp.makeConstraints {
-            $0.top.equalTo(searchBar.snp.bottom).offset(8)
+            $0.top.equalToSuperview()
             $0.leading.trailing.bottom.equalToSuperview()
         }
 

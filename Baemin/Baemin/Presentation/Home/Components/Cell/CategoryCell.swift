@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class BaeminCategoryCell: UICollectionViewCell {
+final class CategoryCell: UICollectionViewCell {
 
     // MARK: - ID
     
