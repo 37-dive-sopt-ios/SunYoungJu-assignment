@@ -21,6 +21,8 @@ final class HomeView: UIView {
     let searchBarContainerView = UIView()
     let feedContainerView = UIView()
     let marketContainerView = UIView()
+    let bannerContainerView = UIView()
+    let listView = ListView()
 
     // MARK: - Init
 
@@ -39,12 +41,12 @@ final class HomeView: UIView {
     private func setupLayout() {
         backgroundColor = .white
 
-        addSubviews(scrollView)
+        addSubview(scrollView)
         scrollView.snp.makeConstraints {
             $0.edges.equalTo(safeAreaLayoutGuide)
         }
 
-        scrollView.addSubviews(contentView)
+        scrollView.addSubview(contentView)
         contentView.snp.makeConstraints {
             $0.edges.equalToSuperview()
             $0.width.equalTo(scrollView.snp.width)
@@ -54,7 +56,9 @@ final class HomeView: UIView {
             headerContainerView,
             searchBarContainerView,
             feedContainerView,
-            marketContainerView
+            marketContainerView,
+            bannerContainerView,
+            listView
         )
 
         headerContainerView.snp.makeConstraints {
@@ -79,6 +83,18 @@ final class HomeView: UIView {
             $0.top.equalTo(feedContainerView.snp.bottom)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(120)
+        }
+
+        bannerContainerView.snp.makeConstraints {
+            $0.top.equalTo(marketContainerView.snp.bottom)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(160)
+        }
+
+        listView.snp.makeConstraints {
+            $0.top.equalTo(bannerContainerView.snp.bottom)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(1050)
             $0.bottom.equalToSuperview()
         }
     }

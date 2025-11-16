@@ -12,22 +12,13 @@ import Then
 
 final class BaeminTabBarController: UITabBarController {
 
-    // MARK: - UI Components
-
-    private let tabBackgroundView = UIView().then {
-        $0.backgroundColor = .white
-    }
-
     // MARK: - Lifecycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        delegate = self
         setupTabBarAppearance()
-        setupTabBackgroundView()
         setupTabBarViewControllers()
-        updateTabBarBackgroundColor(for: selectedViewController)
     }
 }
 
@@ -62,19 +53,8 @@ private extension BaeminTabBarController {
         tabBar.scrollEdgeAppearance = appearance
     }
 
-    func setupTabBackgroundView() {
-        view.insertSubview(tabBackgroundView, belowSubview: tabBar)
-
-        tabBackgroundView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(tabBar.snp.top)
-            make.height.equalTo(120)
-        }
-    }
-
     func setupTabBarViewControllers() {
-        let homeViewController = BaeminTabContentViewController(kind: .home)
-        let homeNavigationController = UINavigationController(rootViewController: homeViewController).then {
+        let home = UINavigationController(rootViewController: BaeminTabContentViewController(kind: .home)).then {
             $0.tabBarItem = UITabBarItem(
                 title: "홈",
                 image: UIImage(named: "home")?.withRenderingMode(.alwaysTemplate),
@@ -82,8 +62,7 @@ private extension BaeminTabBarController {
             )
         }
 
-        let shoppingViewController = BaeminTabContentViewController(kind: .shopping)
-        let shoppingNavigationController = UINavigationController(rootViewController: shoppingViewController).then {
+        let shopping = UINavigationController(rootViewController: BaeminTabContentViewController(kind: .shopping)).then {
             $0.tabBarItem = UITabBarItem(
                 title: "장보기·쇼핑",
                 image: UIImage(named: "shopping")?.withRenderingMode(.alwaysTemplate),
@@ -91,8 +70,7 @@ private extension BaeminTabBarController {
             )
         }
 
-        let wishViewController = BaeminTabContentViewController(kind: .wish)
-        let wishNavigationController = UINavigationController(rootViewController: wishViewController).then {
+        let wish = UINavigationController(rootViewController: BaeminTabContentViewController(kind: .wish)).then {
             $0.tabBarItem = UITabBarItem(
                 title: "찜",
                 image: UIImage(named: "heart")?.withRenderingMode(.alwaysTemplate),
@@ -100,8 +78,7 @@ private extension BaeminTabBarController {
             )
         }
 
-        let ordersViewController = BaeminTabContentViewController(kind: .orders)
-        let ordersNavigationController = UINavigationController(rootViewController: ordersViewController).then {
+        let orders = UINavigationController(rootViewController: BaeminTabContentViewController(kind: .orders)).then {
             $0.tabBarItem = UITabBarItem(
                 title: "주문내역",
                 image: UIImage(named: "order")?.withRenderingMode(.alwaysTemplate),
@@ -109,8 +86,7 @@ private extension BaeminTabBarController {
             )
         }
 
-        let myViewController = BaeminTabContentViewController(kind: .my)
-        let myNavigationController = UINavigationController(rootViewController: myViewController).then {
+        let my = UINavigationController(rootViewController: BaeminTabContentViewController(kind: .my)).then {
             $0.tabBarItem = UITabBarItem(
                 title: "마이배민",
                 image: UIImage(named: "my")?.withRenderingMode(.alwaysTemplate),
@@ -118,50 +94,8 @@ private extension BaeminTabBarController {
             )
         }
 
-        viewControllers = [
-            homeNavigationController,
-            shoppingNavigationController,
-            wishNavigationController,
-            ordersNavigationController,
-            myNavigationController
-        ]
-
+        viewControllers = [home, shopping, wish, orders, my]
         selectedIndex = 0
-    }
-}
-
-// MARK: - Update
-
-private extension BaeminTabBarController {
-
-    func updateTabBarBackgroundColor(for viewController: UIViewController?) {
-        guard let viewController else {
-            tabBackgroundView.backgroundColor = .white
-            return
-        }
-
-        let baseViewController: UIViewController
-
-        if let navigationController = viewController as? UINavigationController {
-            baseViewController = navigationController.viewControllers.first ?? navigationController
-        } else {
-            baseViewController = viewController
-        }
-
-        if let contentViewController = baseViewController as? BaeminTabContentViewController {
-            tabBackgroundView.backgroundColor = contentViewController.tabBackgroundColor
-        } else {
-            tabBackgroundView.backgroundColor = .white
-        }
-    }
-}
-
-// MARK: - Delegate
-
-extension BaeminTabBarController: UITabBarControllerDelegate {
-    func tabBarController(_ tabBarController: UITabBarController,
-                          didSelect viewController: UIViewController) {
-        updateTabBarBackgroundColor(for: viewController)
     }
 }
 
@@ -170,3 +104,4 @@ extension BaeminTabBarController: UITabBarControllerDelegate {
 #Preview {
     BaeminTabBarController()
 }
+

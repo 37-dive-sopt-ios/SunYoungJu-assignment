@@ -17,12 +17,12 @@ final class BaeminFeedViewController: BaseViewController,
                                       UICollectionViewDelegateFlowLayout {
 
     // MARK: - Data
-
+    
     private let topTitles = ["음식배달", "픽업", "장보기·쇼핑", "선물하기", "혜택모아보기"]
     private let categories = BaeminFeed.categories
 
     // MARK: - UI
-
+    
     private let gradientView = UIView()
 
     private let bannerContainer = UIView()
@@ -58,7 +58,7 @@ final class BaeminFeedViewController: BaseViewController,
     }()
 
     // MARK: - LifeCycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -71,7 +71,7 @@ final class BaeminFeedViewController: BaseViewController,
     }
 
     // MARK: - Setup
-
+    
     private func setupUI() {
         view.addSubviews(
             gradientView,
@@ -228,20 +228,17 @@ final class BaeminFeedViewController: BaseViewController,
     }
 
     // MARK: - Action
-
     @objc private func didTapMore() {
         print("더보기 탭")
     }
 
     // MARK: - Menubar Delegate
-
     func menubar(didSelect index: Int) {
         let indexPath = IndexPath(item: index, section: 0)
         contentCollection.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
 
     // MARK: - CollectionView
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         topTitles.count
     }
@@ -255,16 +252,14 @@ final class BaeminFeedViewController: BaseViewController,
 
         if indexPath.item == 0 {
             cell.configureAsCategoryGrid(categories: categories)
-            cell.onSelectCategory = { [weak self] index in
-                if index == 0 {
-                    self?.showListView()
-                } else {
-                    self?.showEmptyAlert()
-                }
+            cell.onSelectCategory = { [weak self] _ in
+                self?.showEmptyAlert()
             }
         } else {
             cell.configureAsPlaceholder(title: topTitles[indexPath.item])
-            cell.onSelectCategory = nil
+            cell.onSelectCategory = { [weak self] _ in
+                self?.showEmptyAlert()
+            }
         }
         return cell
     }
@@ -276,7 +271,7 @@ final class BaeminFeedViewController: BaseViewController,
     }
 
     // MARK: - Scroll Sync
-
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard scrollView == contentCollection else { return }
         let width = scrollView.bounds.width
@@ -306,13 +301,6 @@ final class BaeminFeedViewController: BaseViewController,
         menubar.setSelected(index: page, animated: true)
     }
 
-    // MARK: - Navigation
-
-    private func showListView() {
-        let viewController = ListViewController()
-        navigationController?.pushViewController(viewController, animated: true)
-    }
-
     private func showEmptyAlert() {
         let alert = UIAlertController(title: nil, message: "아무것도 없지롱", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "확인", style: .default))
@@ -320,7 +308,7 @@ final class BaeminFeedViewController: BaseViewController,
     }
 
     // MARK: - Helpers
-
+    
     private func addMintGradient(to view: UIView) {
         view.backgroundColor = .baeminBackgroundWhite
         view.layer.sublayers?.filter { $0.name == "mintGradient" }.forEach { $0.removeFromSuperlayer() }
@@ -370,16 +358,16 @@ private final class PageCell: UICollectionViewCell,
                               UICollectionViewDelegateFlowLayout {
 
     // MARK: - Static
-
+    
     static let reuseID = "PageCell"
 
     // MARK: - Data
-
+    
     private var categories: [BaeminCategory] = []
     var onSelectCategory: ((Int) -> Void)?
 
     // MARK: - UI
-
+    
     private let gridCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 12
@@ -394,7 +382,7 @@ private final class PageCell: UICollectionViewCell,
     private let placeholderLabel = UILabel()
 
     // MARK: - Init
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -402,7 +390,7 @@ private final class PageCell: UICollectionViewCell,
 
         gridCollectionView.dataSource = self
         gridCollectionView.delegate = self
-        gridCollectionView.register(BaeminCategoryCell.self, forCellWithReuseIdentifier: BaeminCategoryCell.reuseID)
+        gridCollectionView.register(CategoryCell.self, forCellWithReuseIdentifier: CategoryCell.reuseID)
         gridCollectionView.snp.makeConstraints {
             $0.edges.equalToSuperview().inset(UIEdgeInsets(top: 20, left: 16, bottom: 0, right: 16))
         }
@@ -423,7 +411,7 @@ private final class PageCell: UICollectionViewCell,
     }
 
     // MARK: - Config
-
+    
     func configureAsCategoryGrid(categories: [BaeminCategory]) {
         self.categories = categories
         gridCollectionView.isHidden = false
@@ -438,7 +426,7 @@ private final class PageCell: UICollectionViewCell,
     }
 
     // MARK: - CollectionView
-
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         categories.count
     }
@@ -457,9 +445,9 @@ private final class PageCell: UICollectionViewCell,
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: BaeminCategoryCell.reuseID,
+            withReuseIdentifier: CategoryCell.reuseID,
             for: indexPath
-        ) as! BaeminCategoryCell
+        ) as! CategoryCell
         let item = categories[indexPath.item]
         cell.configure(title: item.title, image: item.image)
         return cell

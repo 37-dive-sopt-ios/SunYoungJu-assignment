@@ -64,7 +64,7 @@ final class BaeminMarketViewController: BaseViewController,
         collectionView.do {
             $0.dataSource = self
             $0.delegate = self
-            $0.register(BaeminCategoryCell.self, forCellWithReuseIdentifier: BaeminCategoryCell.reuseID)
+            $0.register(CategoryCell.self, forCellWithReuseIdentifier: CategoryCell.reuseID)
         }
         collectionView.snp.makeConstraints {
             $0.top.equalTo(topDividerView.snp.bottom)
@@ -90,9 +90,9 @@ final class BaeminMarketViewController: BaseViewController,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
         let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: BaeminCategoryCell.reuseID,
+            withReuseIdentifier: CategoryCell.reuseID,
             for: indexPath
-        ) as! BaeminCategoryCell
+        ) as! CategoryCell
 
         let item = items[indexPath.item]
         cell.configure(title: item.title, image: item.image)
