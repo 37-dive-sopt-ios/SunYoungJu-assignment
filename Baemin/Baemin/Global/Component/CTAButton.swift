@@ -35,13 +35,14 @@ final class CTAButton: UIButton {
         self.ctaSize = size
         super.init(frame: .zero)
         commonInit()
-        apply(title: title)
+        setTitle(title,  for: .normal)
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         commonInit()
-        apply(title: title(for: .normal) ?? currentTitle ?? "")
+        let text = title(for: .normal) ?? currentTitle ?? ""
+        setTitle(text, for: .normal)
     }
 
     // MARK: - Setters
@@ -84,8 +85,8 @@ final class CTAButton: UIButton {
     }
 
     private func refreshConfiguration() {
-        let title = title(for: .normal) ?? ""
-        configuration = buildConfiguration(title: title)
+        let text = title(for: .normal) ?? ""
+        configuration = buildConfiguration(title: text)
     }
 
     // MARK: - Configuration
@@ -93,7 +94,6 @@ final class CTAButton: UIButton {
     private func buildConfiguration(title: String) -> UIButton.Configuration {
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = isActive ? .baeminMint500 : .baeminGray200
-        config.baseForegroundColor = .baeminWhite
         config.cornerStyle = .fixed
         config.background.cornerRadius = ctaSize.cornerRadius
         config.contentInsets = NSDirectionalEdgeInsets(
@@ -109,7 +109,15 @@ final class CTAButton: UIButton {
             alignment: .center,
             isSingleLine: true
         )
-        config.attributedTitle = AttributedString(styled)
+
+        let mutable = NSMutableAttributedString(attributedString: styled)
+        mutable.addAttribute(
+            .foregroundColor,
+            value: UIColor.baeminWhite,
+            range: NSRange(location: 0, length: mutable.length)
+        )
+
+        config.attributedTitle = AttributedString(mutable)
 
         return config
     }
