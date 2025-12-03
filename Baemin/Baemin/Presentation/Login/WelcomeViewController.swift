@@ -6,6 +6,8 @@
 //
 
 import UIKit
+
+import Combine
 import SnapKit
 import Then
 
@@ -20,7 +22,6 @@ protocol WelcomeViewControllerDelegate: AnyObject {
 final class WelcomeViewController: BaseViewController {
     
     weak var delegate: WelcomeViewControllerDelegate?
-    var email: String = ""
 
     // MARK: - UI
     
@@ -60,6 +61,23 @@ final class WelcomeViewController: BaseViewController {
         $0.alignment = .fill
         $0.distribution = .fill
         $0.spacing = 24
+    }
+
+    // MARK: - Properties
+
+    private let viewModel: WelcomeViewModel
+    private var cancellables = Set<AnyCancellable>()
+
+    // MARK: - Init
+
+    init(viewModel: WelcomeViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Lifecycle
@@ -116,9 +134,25 @@ final class WelcomeViewController: BaseViewController {
     }
 
     override func setAction() {
-        if !email.isEmpty {
-            subtitleLabel.text = "\(email)님 반가워요!"
-        }
+        bindViewModel()
+    }
+
+    // MARK: - Bindings
+
+    private func bindViewModel() {
+        viewModel.$titleText
+            .receive(on: RunLoop.main)
+            .sink { [weak self] text in
+                self?.titleLabel.text = text
+            }
+            .store(in: &cancellables)
+
+        viewModel.$subtitleText
+            .receive(on: RunLoop.main)
+            .sink { [weak self] text in
+                self?.subtitleLabel.text = text
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Navigation
@@ -138,12 +172,12 @@ final class WelcomeViewController: BaseViewController {
     // MARK: - Actions
     
     @objc private func didTapBackButtonAction() {
-        delegate?.didTapBackButton(email: email)
+        delegate?.didTapBackButton(email: viewModel.email)
         goToBaeminTabBar()
     }
 
     private func notifyAndClose() {
-        delegate?.didTapBackButton(email: email)
+        delegate?.didTapBackButton(email: viewModel.email)
 
         if let nav = navigationController {
             if nav.viewControllers.first == self {

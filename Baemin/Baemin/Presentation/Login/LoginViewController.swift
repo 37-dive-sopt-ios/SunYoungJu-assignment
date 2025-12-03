@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Combine
 import SnapKit
 import Then
 
@@ -60,6 +61,11 @@ final class LoginViewController: BaseViewController {
         $0.spacing = 12
     }
     
+    // MARK: - Properties
+
+    private let viewModel = LoginViewModel()
+    private var cancellables = Set<AnyCancellable>()
+    
     // MARK: - Lifecycle
     
     override func setUI() {
@@ -102,25 +108,54 @@ final class LoginViewController: BaseViewController {
     }
     
     override func setAction() {
-        let refresh = { [weak self] in
-            guard let self else { return }
-            self.loginButton.setActive(
-                !self.emailField.text.isEmpty &&
-                !self.passwordField.text.isEmpty
-            )
+        bindViewModel()
+        bindUI()
+    }
+    
+    // MARK: - Bindings
+
+    private func bindViewModel() {
+        viewModel.$isLoginEnabled
+            .receive(on: RunLoop.main)
+            .sink { [weak self] isActive in
+                self?.loginButton.setActive(isActive)
+            }
+            .store(in: &cancellables)
+
+        viewModel.event
+            .receive(on: RunLoop.main)
+            .sink { [weak self] event in
+                guard let self else { return }
+                switch event {
+                case .showValidationError(let error):
+                    ToastMessage.show(in: view, message: error.message)
+                    focus(for: error.field)
+                case .navigateToWelcome(let email):
+                    navigateToWelcome(email: email)
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    private func bindUI() {
+        emailField.onTextChanged = { [weak self] text in
+            self?.viewModel.email = text
         }
-        
-        emailField.onTextChanged = { _ in refresh() }
-        passwordField.onTextChanged = { _ in refresh() }
-        refresh()
-        
-        emailField.onReturn = { [weak self] in self?.passwordField.focus() }
+
+        passwordField.onTextChanged = { [weak self] text in
+            self?.viewModel.password = text
+        }
+
+        emailField.onReturn = { [weak self] in
+            self?.passwordField.focus()
+        }
+
         passwordField.onReturn = { [weak self] in
             guard let self else { return }
-            self.view.endEditing(true)
-            if self.loginButton.isActive { self.performLogin() }
+            view.endEditing(true)
+            viewModel.login()
         }
-        
+
         loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         findAccountButton.addTarget(self, action: #selector(findAccountTapped), for: .touchUpInside)
     }
@@ -128,23 +163,12 @@ final class LoginViewController: BaseViewController {
     // MARK: - Actions
     
     @objc private func loginButtonTapped() {
-        performLogin()
+        viewModel.login()
     }
     
-    private func performLogin() {
-        let email = emailField.text
-        let password = passwordField.text
-        
-        guard !email.isEmpty, !password.isEmpty else { return }
-        
-        if let invalid = validateSubmission(email: email, password: password) {
-            ToastMessage.show(in: view, message: invalid.message)
-            focus(for: invalid.field)
-            return
-        }
-        
-        let vc = WelcomeViewController()
-        vc.email = email
+    private func navigateToWelcome(email: String) {
+        let welcomeViewModel = WelcomeViewModel(email: email)
+        let vc = WelcomeViewController(viewModel: welcomeViewModel)
         vc.delegate = self
         
         if let nav = navigationController {
@@ -155,7 +179,7 @@ final class LoginViewController: BaseViewController {
             present(nav, animated: true)
         }
     }
-    
+
     @objc private func findAccountTapped() {
         let sheet = LoginBottomSheetViewController()
         
@@ -183,37 +207,23 @@ final class LoginViewController: BaseViewController {
     }
 }
 
-// MARK: - Validation
+// MARK: - Focus & Delegate
 
 extension LoginViewController {
     
-    private enum InvalidField { case email, password }
-    
-    private func validateSubmission(email: String, password: String)
-        -> (message: String, field: InvalidField)?
-    {
-        if !Validator.isValidEmail(email) {
-            return ("이메일 형식이 달라요", .email)
-        }
-        if !Validator.isValidPassword(password) {
-            return ("비밀번호 형식이 달라요", .password)
-        }
-        return nil
-    }
-    
-    private func focus(for field: InvalidField) {
+    private func focus(for field: LoginViewModel.InvalidField) {
         switch field {
-        case .email: emailField.focus()
-        case .password: passwordField.focus()
+        case .email:
+            emailField.focus()
+        case .password:
+            passwordField.focus()
         }
     }
 }
-
-// MARK: - Welcome Delegate
 
 extension LoginViewController: WelcomeViewControllerDelegate {
     func didTapBackButton(email: String) {
+        viewModel.email = email
         emailField.setText(email)
     }
 }
-
