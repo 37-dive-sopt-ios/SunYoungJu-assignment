@@ -5,13 +5,12 @@
 //  Created by sun on 10/31/25.
 //
 
-
 import UIKit
 
 import SnapKit
 import Then
 
-final class LoginBottomSheetViewController: UIViewController {
+final class LoginBottomSheetViewController: BaseViewController {
 
     var onConfirm: ((String) -> Void)?
 
@@ -113,4 +112,3 @@ extension LoginBottomSheetViewController: UITextFieldDelegate {
         return true
     }
 }
-
